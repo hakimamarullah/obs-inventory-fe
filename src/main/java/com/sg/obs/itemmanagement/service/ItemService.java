@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
+import java.util.Optional;
 
 
 @Service
@@ -27,7 +28,7 @@ public class ItemService {
                 .uri(uriBuilder -> uriBuilder.path("")
                         .queryParam("page", pageable.getPageNumber())
                         .queryParam("size", pageable.getPageSize())
-                        .queryParam("name", currentFilter == null ? "" : currentFilter)
+                        .queryParam("name", Optional.ofNullable(currentFilter).orElse(""))
                         .build())
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<PageWrapper<ItemDto>>() {})
