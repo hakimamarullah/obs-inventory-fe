@@ -42,10 +42,16 @@ public final class MainLayout extends AppLayout {
         var appLogo = VaadinIcon.CUBES.create();
         appLogo.addClassNames(TextColor.PRIMARY, IconSize.LARGE);
 
-        var appName = new Span("Obs Inventory Fe");
+        var appName = new Span("OBSIMS");
         appName.addClassNames(FontWeight.SEMIBOLD, FontSize.LARGE);
 
-        var header = new Div(appLogo, appName);
+        var appSubtitle = new Span("OBS Inventory Management System");
+        appSubtitle.addClassNames(TextColor.SECONDARY, FontSize.SMALL);
+
+        var titleContainer = new Div(appName, appSubtitle);
+        titleContainer.addClassNames(Display.FLEX, FlexDirection.COLUMN);
+
+        var header = new Div(appLogo, titleContainer);
         header.addClassNames(Display.FLEX, Padding.MEDIUM, Gap.MEDIUM, AlignItems.CENTER);
         return header;
     }
@@ -70,6 +76,7 @@ public final class MainLayout extends AppLayout {
 
         var avatar = new Avatar(user.getFullName(), user.getPictureUrl());
         avatar.addThemeVariants(AvatarVariant.LUMO_XSMALL);
+        avatar.setImage(user.getPictureUrl());
         avatar.addClassNames(Margin.Right.SMALL);
         avatar.setColorIndex(5);
 

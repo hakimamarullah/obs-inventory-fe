@@ -1,6 +1,7 @@
 package com.sg.obs.security.dev;
 
 import com.sg.obs.security.controlcenter.ControlCenterSecurityConfig;
+import com.sg.obs.security.prod.ProdSecurityConfig;
 import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 import com.vaadin.flow.spring.security.VaadinAwareSecurityContextHolderStrategyConfiguration;
@@ -46,7 +47,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 @Configuration
 @Import({ VaadinAwareSecurityContextHolderStrategyConfiguration.class })
-@ConditionalOnMissingBean(ControlCenterSecurityConfig.class)
+@ConditionalOnMissingBean(ProdSecurityConfig.class)
 class DevSecurityConfig {
 
     private static final Logger log = LoggerFactory.getLogger(DevSecurityConfig.class);
