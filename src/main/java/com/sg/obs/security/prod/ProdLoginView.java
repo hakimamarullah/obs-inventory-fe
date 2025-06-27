@@ -16,7 +16,7 @@ class ProdLoginView extends Main implements BeforeEnterObserver {
 
     static final String LOGIN_PATH = "login";
 
-    private final AuthenticationContext authenticationContext;
+    private final transient AuthenticationContext authenticationContext;
     private final LoginForm login;
 
     ProdLoginView(AuthenticationContext authenticationContext) {
