@@ -45,7 +45,7 @@ public class ItemService {
                 .bodyToMono(Void.class);
     }
 
-    public Mono<Void> updateItem(Long id, String name, int price) {
+    public Mono<Void> updateItem(Long id, String name, double price) {
         Map<String, Object> body = Map.of("name", name, "price", price, "id", id);
         return webClient.put()
                 .uri("", id)

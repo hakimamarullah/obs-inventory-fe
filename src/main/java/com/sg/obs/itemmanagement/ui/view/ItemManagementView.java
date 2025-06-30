@@ -2,6 +2,7 @@ package com.sg.obs.itemmanagement.ui.view;
 
 
 import com.sg.obs.base.ui.component.ConfirmDeleteDialog;
+import com.sg.obs.base.ui.component.EditDialog;
 import com.sg.obs.base.ui.component.PaginatedGrid;
 import com.sg.obs.base.utils.DatetimeUtils;
 import com.sg.obs.itemmanagement.domain.ItemDto;
@@ -23,6 +24,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import io.micrometer.common.util.StringUtils;
 import jakarta.annotation.security.RolesAllowed;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
 
@@ -30,6 +32,7 @@ import java.util.Objects;
 @PageTitle("Item Management")
 @Menu(title = "Items Management", icon = "vaadin:clipboard-check", order = 0)
 @RolesAllowed({AppRoles.ADMIN})
+@Slf4j
 public class ItemManagementView extends VerticalLayout {
 
     public static final String PRICE_FIELD_LABEL = "Price";
@@ -101,8 +104,12 @@ public class ItemManagementView extends VerticalLayout {
     }
 
     private void openEditDialog(ItemDto item) {
-        Dialog dialog = new Dialog();
+        EditDialog<UpdateItemDTO> editDialog = new EditDialog<>();
+        Dialog dialog = editDialog.getMainDialog();
         dialog.setHeaderTitle("Edit Item");
+        dialog.setCloseOnOutsideClick(true);
+        dialog.setWidth("400px");
+
 
         TextField updatedName = new TextField("Name");
         updatedName.setValue(item.getName());
@@ -110,32 +117,17 @@ public class ItemManagementView extends VerticalLayout {
         NumberField updatedPrice = new NumberField(PRICE_FIELD_LABEL);
         updatedPrice.setValue(item.getPrice());
 
-        Button save = new Button("Save");
-        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        Button cancel = new Button("Cancel", event -> dialog.close());
-        cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        editDialog.addLeftComponent("name", updatedName);
+        editDialog.addRightComponent("price", updatedPrice);
 
-        save.addClickListener(event -> {
-            save.setEnabled(false);
-            try {
-                itemService.updateItem(item.getId(), updatedName.getValue(), updatedPrice.getValue().intValue()).block();
-                Notification.show("Item updated", 3000, Notification.Position.TOP_CENTER);
-                dialog.close();
-                paginatedGrid.loadPage(0);
-            } catch (Exception e) {
-                Notification.show("Failed to update item", 3000, Notification.Position.TOP_CENTER)
-                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
-                save.setEnabled(true);
-            }
-        });
+        editDialog.addSaveListener(UpdateItemDTO.class, it -> itemService.updateItem(item.getId(), it.name(), it.price()).block());
 
-        HorizontalLayout buttons = new HorizontalLayout(save, cancel);
-        VerticalLayout layout = new VerticalLayout(updatedName, updatedPrice, buttons);
-        layout.setPadding(false);
-        layout.setSpacing(true);
 
-        dialog.add(layout);
-        dialog.open();
+        editDialog.show()
+                .onSuccess(() -> {
+                    editDialog.close();
+                    paginatedGrid.loadPage(0);
+                });
     }
 
     private void confirmDelete(ItemDto item) {
@@ -143,5 +135,7 @@ public class ItemManagementView extends VerticalLayout {
                 .show(item, ItemDto::getName, it -> itemService.deleteItem(it.getId()).block());
 
     }
+
+    record UpdateItemDTO(String name, double price) {}
 
 }
